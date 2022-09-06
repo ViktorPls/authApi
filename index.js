@@ -43,34 +43,32 @@ app.post(
     const newUser = new User({ name, email, password });
 
     //FIXME: Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client.
-    /* if (newUser.email) {
-      User.findOne({ email: newUser.email }).then((user) => {
-        console.log(user);
-        return res.send({ msg: "Email already exists" });
-      });
-    } */
+    const isUser = await User.findOne({ email });
+    if (isUser) {
+      return res.status(403).send({ msg: "Email already exists" });
+    }
 
-  if (name && email && password) {
-    await newUser
-      .save()
-      .then((user) => res.status(201).json(user))
-      .catch((error) => {
-        throw error;
-      });
-      return
-  }
+    if (name && email && password) {
+      await newUser
+        .save()
+        .then((user) => res.status(201).json(user))
+        .catch((error) => {
+          throw error;
+        });
+      return;
+    }
 
     return res.send("Something went wrong!");
   }
 );
 
 // Login
-app.get('/login', (req, res) => {
-  res.send('login')
-})
+app.get("/login", (req, res) => {
+  res.send("login");
+});
 
 app.post("/login", (req, res) => {
-  const { email, password } = req.body
+  const { email, password } = req.body;
   res.send(JSON.stringify({ email, password }));
 });
 
