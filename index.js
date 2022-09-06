@@ -1,7 +1,11 @@
 const express = require("express");
 const morgan = require("morgan");
-const app = express();
+const bcrypt = require("bcrypt");
+const expressJwt = require("express-jwt");
+const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
+
+const app = express();
 const User = require("./model/User");
 const { body, validationResult } = require("express-validator");
 
@@ -59,5 +63,15 @@ app.post(
     return res.send("Something went wrong!");
   }
 );
+
+// Login
+app.get('/login', (req, res) => {
+  res.send('login')
+})
+
+app.post("/login", (req, res) => {
+  const { email, password } = req.body
+  res.send(JSON.stringify({ email, password }));
+});
 
 app.listen(3000, () => console.log("Server up and running"));
