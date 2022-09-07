@@ -2,7 +2,7 @@ const express = require("express");
 const morgan = require("morgan");
 const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
-const jwt = require("jsonwebtoken")
+const jwt = require("jsonwebtoken");
 const expressjwt = require("express-jwt");
 
 const app = express();
@@ -40,27 +40,30 @@ app.post(
 
     const { name, email, password } = req.body;
 
-    const isUser = await User.findOne({ email });
-    if (isUser) {
-      return res.status(403).send({ error: "Email already exists" });
+    try {
+      const isUser = await User.findOne({ email });
+      if (isUser) {
+        return res.status(403).send({ error: "Email already exists" });
+      }
+
+      const salt = bcrypt.genSaltSync(); // => Rounds por defecto es 10
+      const hash = bcrypt.hashSync(password, salt);
+
+      const newUser = new User({ name, email, password: hash, salt });
+
+      if (name && email && password) {
+        await newUser
+          .save()
+          .then((user) => res.status(201).json(user))
+          .catch((error) => {
+            throw error;
+          });
+        return;
+      }
+    } catch (error) {
+      console.error({ error });
+      return res.status(500).send("Something went wrong!");
     }
-
-    const salt = bcrypt.genSaltSync(); // => Rounds por defecto es 10
-    const hash = bcrypt.hashSync(password, salt);
-
-    const newUser = new User({ name, email, password: hash , salt });
-
-    if (name && email && password) {
-      await newUser
-        .save()
-        .then((user) => res.status(201).json(user))
-        .catch((error) => {
-          throw error;
-        });
-      return;
-    }
-
-    return res.send("Something went wrong!");
   }
 );
 
