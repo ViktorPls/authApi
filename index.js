@@ -40,13 +40,15 @@ app.post(
 
     const { name, email, password } = req.body;
 
-    const newUser = new User({ name, email, password });
-
-    //FIXME: Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client.
     const isUser = await User.findOne({ email });
     if (isUser) {
       return res.status(403).send({ error: "Email already exists" });
     }
+
+    const salt = bcrypt.genSaltSync(); // => Rounds por defecto es 10
+    const hash = bcrypt.hashSync(password, salt);
+
+    const newUser = new User({ name, email, password: hash , salt });
 
     if (name && email && password) {
       await newUser
