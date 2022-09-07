@@ -1,9 +1,9 @@
 const express = require("express");
 const morgan = require("morgan");
 const bcrypt = require("bcrypt");
-const expressJwt = require("express-jwt");
-const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
+const jwt = require("jsonwebtoken")
+const expressjwt = require("express-jwt");
 
 const app = express();
 const User = require("./model/User");
@@ -45,7 +45,7 @@ app.post(
     //FIXME: Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client.
     const isUser = await User.findOne({ email });
     if (isUser) {
-      return res.status(403).send({ msg: "Email already exists" });
+      return res.status(403).send({ error: "Email already exists" });
     }
 
     if (name && email && password) {
