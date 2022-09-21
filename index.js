@@ -51,15 +51,15 @@ app.post(
 
       const newUser = new User({ name, email, password: hash, salt });
 
-      if (name && email && password) {
-        await newUser
-          .save()
-          .then((user) => res.status(201).json(user))
-          .catch((error) => {
-            throw error;
-          });
-        return;
+      if (!name || !email || !password) {
+        return res.status(403).send({ error: "Faltan datos" })
       }
+      await newUser
+        .save()
+        .then((user) => res.status(201).json(user))
+        .catch((error) => {
+          throw error;
+        });
     } catch (error) {
       console.error({ error });
       return res.status(500).send("Something went wrong!");
@@ -74,7 +74,10 @@ app.get("/login", (req, res) => {
 
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
-  res.send(JSON.stringify({ email, password }));
+  if(!email || !password) {
+    return res.send("You must provide a valid password and email")
+  }
+  return res.send(JSON.stringify({ email, password }));
 });
 
 app.listen(3000, () => console.log("Server up and running"));
