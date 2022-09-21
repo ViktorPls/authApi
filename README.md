@@ -10,7 +10,7 @@
 
 # Get Started
 
-- [Installation](https://github.com/ViktorPls/authApi.git#installation)
+- [Installation](https://github.com/ViktorPls/authApi#installation)
 
 ## Installation
 
