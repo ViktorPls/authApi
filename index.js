@@ -39,7 +39,6 @@ app.post(
     }
 
     const { name, email, password } = req.body;
-
     try {
       const isUser = await User.findOne({ email });
       if (isUser) {
@@ -47,12 +46,12 @@ app.post(
       }
 
       const salt = bcrypt.genSaltSync(); // => Rounds por defecto es 10
-      const hash = bcrypt.hashSync(password, salt);
+      const hashedPassword = bcrypt.hashSync(password, salt);
 
-      const newUser = new User({ name, email, password: hash, salt });
+      const newUser = new User({ name, email, password: hashedPassword, salt });
 
       if (!name || !email || !password) {
-        return res.status(403).send({ error: "Faltan datos" })
+        return res.status(403).send({ error: "Faltan datos" });
       }
       await newUser
         .save()
@@ -61,8 +60,9 @@ app.post(
           throw error;
         });
     } catch (error) {
-      console.error({ error });
-      return res.status(500).send("Something went wrong!");
+      return res
+        .status(500)
+        .json({ message: "Something went wrong!", error: error });
     }
   }
 );
@@ -72,10 +72,10 @@ app.get("/login", (req, res) => {
   res.send("login");
 });
 
-app.post("/login", (req, res) => {
+app.post("/login", async (req, res) => {
   const { email, password } = req.body;
-  if(!email || !password) {
-    return res.send("You must provide a valid password and email")
+  if (!email || !password) {
+    return res.send("You must provide a valid password and email");
   }
   return res.send(JSON.stringify({ email, password }));
 });
